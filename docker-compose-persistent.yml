@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17.7
+    environment:
+      POSTGRES_USER: lordoftherows
+      POSTGRES_PASSWORD: rows123
+      POSTGRES_DB: abschlussprojekt
+    ports:
+      - "5432:5432"
+    volumes:      
+      - ./spring-boot/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/pg_notify.sql
+      - ./spring-boot/src/main/resources/data.sql:/docker-entrypoint-initdb.d/q-data.sql
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+networks:
+  backend_network:
+    driver: bridge
