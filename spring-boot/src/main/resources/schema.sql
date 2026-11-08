@@ -271,40 +271,6 @@ FROM produkt p
 GROUP BY p.sku, p.name
 ORDER BY gesamt_verkaufte_menge DESC, p.sku;
 
-CREATE OR REPLACE VIEW v_produkt_verkaufszahlen AS
-SELECT
-    p.sku,
-    p.name,
-    COALESCE(
-            SUM(
-                    CASE
-                        WHEN b.status NOT IN ('neu', 'storniert') THEN bp.menge
-                        ELSE 0
-                        END
-            ), 0
-    ) AS gesamt_verkaufte_menge,
-    COALESCE(
-            SUM(
-                    CASE
-                        WHEN b.status NOT IN ('neu', 'storniert') THEN (bp.menge * p.preis)
-                        ELSE 0
-                        END
-            ), 0
-    ) AS umsatz,
-    COALESCE(
-            COUNT(
-                    DISTINCT CASE
-                                 WHEN b.status NOT IN ('neu', 'storniert') THEN b.bestellung_id
-                                 ELSE NULL
-                END
-            ), 0
-    ) AS anzahl_bestellungen
-FROM produkt p
-         LEFT JOIN bestellposition bp ON bp.sku = p.sku
-         LEFT JOIN bestellung b ON b.bestellung_id = bp.bestellung_id
-GROUP BY p.sku, p.name
-ORDER BY gesamt_verkaufte_menge DESC, p.sku;
-
 CREATE OR REPLACE VIEW v_mitarbeiter_uebersicht AS
 SELECT
     m.personal_nr,
