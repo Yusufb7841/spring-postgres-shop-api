@@ -1,4 +1,4 @@
-//let's add here some common files and directories to ignore
+# Common files and directories to ignore
 .DS_Store
 node_modules/
 dist/
@@ -8,3 +8,9 @@ build/
 .idea/
 *.log
 *.tmp
+
+# Maven build output
+target/
+
+# Local database data (docker-compose-persistent.yml)
+db-data/
