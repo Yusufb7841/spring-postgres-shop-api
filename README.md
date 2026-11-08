@@ -21,7 +21,7 @@ This was my final project for the university course **"Datenbanken: Weiterführe
 - **The order lifecycle is enforced in the database.** An order can only be cancelled while it is `neu` or `bezahlt`. Cancelling it puts all its items back into stock in one set-based `UPDATE`.
 - **4 reporting views** with conditional aggregation, `LEFT JOIN`s, `COALESCE` and a `CROSS JOIN` against an `unnest`-ed status list.
 - **No ORM.** All SQL is handwritten and parameterized, run through Spring's `JdbcTemplate`. One-to-many joins are turned into nested JSON in a single query with a custom `ResultSetExtractor`, which avoids the N+1 query problem.
-- **Clean REST semantics:** `201 Created` with a `Location` header, `204 No Content`, `404 Not Found`. Database constraint violations become `400 Bad Request` instead of a `500` error.
+- **Clean REST semantics:** `201 Created` with a `Location` header, `204 No Content`, `404 Not Found`. Database constraint violations become `400 Bad Request` (or `409 Conflict` for duplicates) instead of a `500` error.
 - **Interactive API docs** through springdoc OpenAPI / Swagger UI.
 - **One-command database setup** with Docker Compose. The schema and seed data load automatically.
 
@@ -309,10 +309,10 @@ Single resources are selected with query parameters (`?id=`, `?sku=`, `?email=`)
 | `200 OK` | Read or update succeeded |
 | `201 Created` | Resource created; the `Location` header points to it |
 | `204 No Content` | Resource deleted |
-| `400 Bad Request` | Malformed JSON or a database constraint was violated (invalid email, weak password, duplicate, …) |
+| `400 Bad Request` | Malformed JSON or a database constraint was violated (invalid email, weak password, …) |
 | `401 Unauthorized` | Login failed |
 | `404 Not Found` | Resource doesn't exist |
-| `409 Conflict` | Order item refers to an order that doesn't exist, or asks for more than is in stock |
+| `409 Conflict` | Duplicate email or SKU, or an order item refers to an order that doesn't exist or asks for more than is in stock |
 
 ---
 
@@ -475,7 +475,6 @@ The domain model uses German names. Here is what they mean:
 This was a course project with a set scope. If I took it further, I would:
 
 - **Hash passwords** (for example with BCrypt) instead of storing them in plain text, and stop returning them from the customer and employee `GET` endpoints.
-- **Return `409 Conflict` for duplicate keys** by checking the SQLSTATE (`SQLException#getSQLState()`) instead of searching the error message.
 - **Add an endpoint for status changes**, so orders can move through their lifecycle without writing SQL.
 - **Add integration tests** with Testcontainers to check the triggers and views against a real PostgreSQL.
 - **Add Bean Validation** (`@Valid`) to the request records, so bad input is rejected before it reaches the database.
