@@ -10,6 +10,11 @@ A REST backend for a small online shop: **customers, addresses, employees, produ
 
 This was my final project for the university course **"Datenbanken: Weiterführende Konzepte"** (*Advanced Database Concepts*), winter semester 2025/26. The project's main idea is that **the database protects its own data**. Validation, stock management and order rules live in PostgreSQL as constraints, triggers and views, so the data stays consistent no matter who writes to it: the API, a script or someone typing SQL by hand.
 
+<p align="center">
+  <img src="docs/swagger-ui.png" alt="Swagger UI listing all REST endpoints of the API, grouped by controller" width="900">
+</p>
+<p align="center"><sub>All endpoints in Swagger UI, available at <code>/swagger-ui.html</code> once the app is running</sub></p>
+
 ---
 
 ## ✨ Highlights
