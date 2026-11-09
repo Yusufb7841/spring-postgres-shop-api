@@ -19,16 +19,25 @@ This was my final project for the university course **"Datenbanken: Weiterführe
 
 ## ✨ Highlights
 
-- **A normalized schema of 7 tables** with foreign keys, cascading deletes and a many-to-many link table for addresses.
-- **Regex `CHECK` constraints** validate emails, names, street names, house numbers and password strength in the database itself.
-- **PL/pgSQL triggers handle stock automatically.** Adding, changing or removing an order item updates the product's stock. Orders that would take stock below zero are rejected.
-- **Overselling is blocked under concurrency.** The stock trigger locks the product row (`SELECT … FOR UPDATE`), so two orders placed at the same time can't both take the last item.
-- **The order lifecycle is enforced in the database.** An order can only be cancelled while it is `neu` or `bezahlt`. Cancelling it puts all its items back into stock in one set-based `UPDATE`.
-- **4 reporting views** with conditional aggregation, `LEFT JOIN`s, `COALESCE` and a `CROSS JOIN` against an `unnest`-ed status list.
-- **No ORM.** All SQL is handwritten and parameterized, run through Spring's `JdbcTemplate`. One-to-many joins are turned into nested JSON in a single query with a custom `ResultSetExtractor`, which avoids the N+1 query problem.
-- **Clean REST semantics:** `201 Created` with a `Location` header, `204 No Content`, `404 Not Found`. Database constraint violations become `400 Bad Request` (or `409 Conflict` for duplicates) instead of a `500` error.
-- **Interactive API docs** through Swagger UI.
-- **One-command database setup** with Docker Compose. The schema and seed data load automatically.
+**🗄️ Database**
+
+- **7 normalized tables** linked by foreign keys
+- **Built-in validation:** `CHECK` constraints for emails, names, addresses and password strength
+- **Automatic stock tracking:** PL/pgSQL triggers update stock whenever order items change
+- **No overselling:** orders beyond the available stock are rejected, even when two arrive at once
+- **Order rules:** shipped orders can't be cancelled, and cancelled orders are restocked automatically
+- **4 reporting views** for sales, customers and employee workload
+
+**☕ Backend**
+
+- **Handwritten SQL, no ORM:** parameterized queries through Spring's `JdbcTemplate`
+- **No N+1 queries:** orders and customers come back as nested JSON from a single query
+- **Clear status codes:** `201`, `204` and `404`, plus `400`/`409` instead of `500` when data is invalid
+
+**🐳 Setup**
+
+- **One command** starts PostgreSQL with the schema and seed data (Docker Compose)
+- **Swagger UI** to browse and try every endpoint
 
 ---
 
