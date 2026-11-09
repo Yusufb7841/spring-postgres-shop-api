@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?logo=springboot&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger_UI-85EA2D?logo=swagger&logoColor=black)
+![Swagger UI](https://img.shields.io/badge/Swagger_UI-API_docs-85EA2D?logo=swagger&logoColor=black)
 
 A REST backend for a small online shop: **customers, addresses, employees, products, orders and order items**. Built with **Spring Boot** and **PostgreSQL**.
 
@@ -27,7 +27,7 @@ This was my final project for the university course **"Datenbanken: Weiterführe
 - **4 reporting views** with conditional aggregation, `LEFT JOIN`s, `COALESCE` and a `CROSS JOIN` against an `unnest`-ed status list.
 - **No ORM.** All SQL is handwritten and parameterized, run through Spring's `JdbcTemplate`. One-to-many joins are turned into nested JSON in a single query with a custom `ResultSetExtractor`, which avoids the N+1 query problem.
 - **Clean REST semantics:** `201 Created` with a `Location` header, `204 No Content`, `404 Not Found`. Database constraint violations become `400 Bad Request` (or `409 Conflict` for duplicates) instead of a `500` error.
-- **Interactive API docs** through springdoc OpenAPI / Swagger UI.
+- **Interactive API docs** through Swagger UI.
 - **One-command database setup** with Docker Compose. The schema and seed data load automatically.
 
 ---
@@ -40,7 +40,7 @@ This was my final project for the university course **"Datenbanken: Weiterführe
 | Framework | Spring Boot 3.5 (Web, JDBC, DevTools) |
 | Database | PostgreSQL 17 |
 | Data access | Spring `JdbcTemplate`, plain SQL |
-| API docs | springdoc-openapi 2.8 (Swagger UI) |
+| API docs | Swagger UI (via springdoc 2.8) |
 | Infrastructure | Docker Compose |
 | Build | Maven |
 
@@ -232,7 +232,7 @@ mvn spring-boot:run
 | --- | --- |
 | Start page | http://localhost:8080 |
 | Swagger UI | http://localhost:8080/swagger-ui.html |
-| OpenAPI spec (JSON) | http://localhost:8080/v3/api-docs |
+| API spec (JSON) | http://localhost:8080/v3/api-docs |
 
 > **Port 5432 already taken?** Change the port mapping in `docker-compose.yml` (for example `"5433:5432"`) and update `spring.datasource.url` in `spring-boot/src/main/resources/application.properties` to match.
 
