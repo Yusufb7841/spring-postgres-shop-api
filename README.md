@@ -6,9 +6,11 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Swagger UI](https://img.shields.io/badge/Swagger_UI-API_docs-85EA2D?logo=swagger&logoColor=black)
 
-A REST backend for a small online shop: **customers, addresses, employees, products, orders and order items**. Built with **Spring Boot** and **PostgreSQL**.
+A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL**. It manages customers, addresses, employees, products and orders.
 
-This was my final project for the university course **"Datenbanken: Weiterführende Konzepte"** (*Advanced Database Concepts*), winter semester 2025/26. The project's main idea is that **the database protects its own data**. Validation, stock management and order rules live in PostgreSQL as constraints, triggers and views, so the data stays consistent no matter who writes to it: the API, a script or someone typing SQL by hand.
+**The main idea:** the database protects its own data. Validation, stock tracking and order rules run inside PostgreSQL. So the data stays correct whether it comes from the API, a script or someone typing SQL by hand.
+
+> 🎓 My final project for the university course *Advanced Database Concepts* ("Datenbanken: Weiterführende Konzepte"), winter semester 2025/26.
 
 <p align="center">
   <img src="docs/swagger-ui.png" alt="Swagger UI listing all REST endpoints of the API, grouped by controller" width="900">
