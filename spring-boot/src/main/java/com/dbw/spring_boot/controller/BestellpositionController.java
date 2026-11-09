@@ -48,7 +48,7 @@ public class BestellpositionController {
             return ResponseEntity.badRequest().build();
         }
 
-        // invalid bestellungId -> 409 (tests accept 400 or 409)
+        // unknown order -> 409
         if (bestellungRepo.findById(req.bestellungId()).isEmpty()) {
             return ResponseEntity.status(409).build();
         }
@@ -59,7 +59,7 @@ public class BestellpositionController {
             return ResponseEntity.badRequest().build();
         }
 
-        // menge must not exceed lagerbestand -> 409 (tests accept 400 or 409)
+        // quantity must not exceed the stock -> 409 (the database trigger enforces this too)
         if (req.menge() > prodOpt.get().lagerbestand()) {
             return ResponseEntity.status(409).build();
         }

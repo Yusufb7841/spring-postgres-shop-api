@@ -92,7 +92,7 @@ public class BestellungRepository {
                 Long.class,
                 req.kundeId(),
                 req.personalNr(),
-                req.datum(),   // bleibt String
+                req.datum(),   // sent as text, cast to timestamp in the SQL above
                 req.status()
         );
     }

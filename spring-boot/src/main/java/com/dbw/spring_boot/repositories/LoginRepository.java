@@ -24,7 +24,7 @@ public class LoginRepository {
 
         List<Mitarbeiter> res = jdbc.query(sql, (rs, rowNum) -> new Mitarbeiter(
                 rs.getLong("personal_nr"),
-                null, // passwort MUSS null im Response sein
+                null, // never send the password back
                 rs.getString("email"),
                 rs.getString("vorname"),
                 rs.getString("nachname")
@@ -43,8 +43,8 @@ public class LoginRepository {
                 rs.getString("email"),
                 rs.getString("vorname"),
                 rs.getString("nachname"),
-                null, // passwort MUSS null im Response sein
-                List.of() // beim Login: adressen laut Fail-Beispiel [] ; Erfolg-Beispiel zeigt auch []
+                null, // never send the password back
+                List.of() // the login response doesn't include addresses
         ), email, passwort);
 
         return res.stream().findFirst();
