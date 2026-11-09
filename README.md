@@ -1,5 +1,6 @@
 # 🛒 Spring Postgres Shop API
 
+[![CI](https://github.com/Yusufb7841/spring-postgres-shop-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Yusufb7841/spring-postgres-shop-api/actions/workflows/ci.yml)
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?logo=springboot&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
@@ -36,10 +37,11 @@ A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL*
 - **No N+1 queries:** orders and customers come back as nested JSON from a single query
 - **Clear status codes:** `201`, `204` and `404`, plus `400`/`409` instead of `500` when data is invalid
 
-**🐳 Setup**
+**🐳 Setup & Testing**
 
 - **One command** starts PostgreSQL with the schema and seed data (Docker Compose)
 - **Swagger UI** to browse and try every endpoint
+- **15 integration tests** check the triggers, views and API against a real PostgreSQL on every push
 
 ---
 
@@ -53,6 +55,7 @@ A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL*
 | Data access | Spring `JdbcTemplate`, plain SQL |
 | API docs | Swagger UI (via springdoc 2.8) |
 | Infrastructure | Docker Compose |
+| Testing | JUnit 5, Testcontainers, GitHub Actions |
 | Build | Maven |
 
 ---
@@ -256,6 +259,15 @@ mvn spring-boot:run
 
 The seed data includes 10 customers, 14 addresses, 10 employees, 10 products and 10 orders with 19 order items, covering every order status.
 
+### Running the tests
+
+```bash
+cd spring-boot
+mvn test
+```
+
+The tests start their own PostgreSQL in Docker (via Testcontainers), so Docker needs to be running, but `docker compose up` isn't required. They cover the stock triggers, the cancellation rules, the reporting views and the API's status codes. GitHub Actions runs them on every push.
+
 ---
 
 ## 📡 API Reference
@@ -444,20 +456,29 @@ docker compose exec db psql -U lordoftherows -d abschlussprojekt
 
 ```
 spring-postgres-shop-api/
+├── .github/workflows/ci.yml         # Runs the tests on every push
 ├── docker-compose.yml               # PostgreSQL, fresh on every new container
 ├── docker-compose-persistent.yml    # PostgreSQL with data stored in ./db-data
+├── docs/                            # Screenshot used in this README
 └── spring-boot/
     ├── pom.xml
-    └── src/main/
-        ├── java/com/dbw/spring_boot/
-        │   ├── Application.java
-        │   ├── controller/          # REST endpoints + ApiExceptionHandler
-        │   ├── model/               # Java records: entities, requests, responses, reports
-        │   └── repositories/        # SQL via JdbcTemplate, row mappers, result set extractors
-        └── resources/
-            ├── application.properties
-            ├── schema.sql           # Tables, constraints, triggers, views
-            └── data.sql             # Seed data
+    └── src/
+        ├── main/
+        │   ├── java/com/dbw/spring_boot/
+        │   │   ├── Application.java
+        │   │   ├── controller/      # REST endpoints + ApiExceptionHandler
+        │   │   ├── model/           # Java records: entities, requests, responses, reports
+        │   │   └── repositories/    # SQL via JdbcTemplate, row mappers, result set extractors
+        │   └── resources/
+        │       ├── application.properties
+        │       ├── schema.sql       # Tables, constraints, triggers, views
+        │       └── data.sql         # Seed data
+        └── test/java/com/dbw/spring_boot/
+            ├── IntegrationTest.java # Shared setup: PostgreSQL via Testcontainers
+            ├── StockTriggerTest.java
+            ├── OrderCancellationTest.java
+            ├── RestApiTest.java
+            └── ReportViewTest.java
 ```
 
 ---
@@ -492,5 +513,4 @@ This was a course project with a set scope. If I took it further, I would:
 
 - **Hash passwords** (for example with BCrypt) instead of storing them in plain text, and stop returning them from the customer and employee `GET` endpoints.
 - **Add an endpoint for status changes**, so orders can move through their lifecycle without writing SQL.
-- **Add integration tests** with Testcontainers to check the triggers and views against a real PostgreSQL.
 - **Add Bean Validation** (`@Valid`) to the request records, so bad input is rejected before it reaches the database.
