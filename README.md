@@ -1,4 +1,4 @@
-# 🛒 Datenbank-Projekt: Order Management Backend
+# 🛒 Spring Postgres Shop API
 
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?logo=springboot&logoColor=white)
@@ -432,7 +432,7 @@ docker compose exec db psql -U lordoftherows -d abschlussprojekt
 ## 📁 Project Structure
 
 ```
-Datenbank-Projekt/
+spring-postgres-shop-api/
 ├── docker-compose.yml               # PostgreSQL, fresh on every new container
 ├── docker-compose-persistent.yml    # PostgreSQL with data stored in ./db-data
 └── spring-boot/
