@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record BestellungPositionResponse(
         long positionsId,
         long bestellungId,
-        ProduktMini produkt,
+        Produkt produkt,
         int menge,
         BigDecimal gesamtpreis
 ) {}

@@ -27,9 +27,7 @@ public class ProduktController {
             return ResponseEntity.ok(all);
         }
 
-        return repo.findBySku(sku)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.of(repo.findBySku(sku));
     }
 
     @PostMapping

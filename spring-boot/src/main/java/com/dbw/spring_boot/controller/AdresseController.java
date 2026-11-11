@@ -27,9 +27,7 @@ public class AdresseController {
             return ResponseEntity.ok(all);
         }
 
-        return repo.findById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.of(repo.findById(id));
     }
 
     @PostMapping

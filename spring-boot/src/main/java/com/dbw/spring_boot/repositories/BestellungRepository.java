@@ -46,7 +46,7 @@ public class BestellungRepository {
 
             Long posId = (Long) rs.getObject("position_id");
             if (posId != null) {
-                ProduktMini produkt = new ProduktMini(
+                Produkt produkt = new Produkt(
                         rs.getString("sku"),
                         rs.getString("produkt_name"),
                         rs.getBigDecimal("preis"),

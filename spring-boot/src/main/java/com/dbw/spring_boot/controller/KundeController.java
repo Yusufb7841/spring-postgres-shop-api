@@ -26,19 +26,16 @@ public class KundeController {
             @RequestParam(name = "email", required = false) String email
     ) {
         if (id != null && email != null) {
-            return ResponseEntity.badRequest().body("Bitte nur id ODER email angeben, nicht beides.");
+            // only one of id and email may be given
+            return ResponseEntity.badRequest().build();
         }
 
         if (id != null) {
-            return repo.findByIdWithAddresses(id)
-                    .<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            return ResponseEntity.of(repo.findByIdWithAddresses(id));
         }
 
         if (email != null) {
-            return repo.findByEmailWithAddresses(email)
-                    .<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            return ResponseEntity.of(repo.findByEmailWithAddresses(email));
         }
 
         List<KundeResponse> all = repo.findAllWithAddresses();
