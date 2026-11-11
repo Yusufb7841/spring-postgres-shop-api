@@ -46,6 +46,15 @@ class RestApiTest extends IntegrationTest {
     }
 
     @Test
+    void duplicateEmployeeEmailReturnsConflict() {
+        ResponseEntity<String> res = api.postForEntity("/mitarbeiter",
+                Map.of("vorname", "Anna", "nachname", "Meier", "email", "anna.meier@firma.db", "passwort", "a#123"),
+                String.class);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
     void emailWithADotBeforeTheAtSignIsAccepted() {
         ResponseEntity<KundeResponse> res = api.postForEntity("/kunden",
                 Map.of("email", "lisa.lang@test.db", "vorname", "Lisa", "nachname", "Lang", "passwort", "lisa1!"),

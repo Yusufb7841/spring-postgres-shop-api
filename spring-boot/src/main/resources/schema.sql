@@ -2,7 +2,8 @@
 --  Online shop database (PostgreSQL 17)
 -- =============================================================================
 --
---  1. Tables     customers, addresses, employees, products, orders, order items
+--  1. Tables     customers, addresses, employees, products, orders, order items,
+--                plus indexes on their foreign keys
 --  2. Triggers   keep the stock and the order status consistent
 --  3. Views      the reports behind the GET /report/... endpoints
 --
@@ -54,7 +55,7 @@ CREATE TABLE mitarbeiter (
     personal_nr  BIGINT        GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     vorname      VARCHAR(255)  NOT NULL,
     nachname     VARCHAR(255)  NOT NULL,
-    email        VARCHAR(255)  NOT NULL,
+    email        VARCHAR(255)  NOT NULL UNIQUE,
     -- same password rules as for customers
     passwort     VARCHAR(20)   NOT NULL
         CHECK (char_length(passwort) BETWEEN 5 AND 20)
@@ -103,6 +104,17 @@ CREATE TABLE bestellposition (
     sku            VARCHAR(64)  NOT NULL REFERENCES produkt(sku) ON DELETE CASCADE,
     bestellung_id  BIGINT       NOT NULL REFERENCES bestellung(bestellung_id) ON DELETE CASCADE
 );
+
+-- PostgreSQL creates indexes for primary keys and UNIQUE columns automatically,
+-- but not for foreign keys. These speed up the joins in the views and triggers,
+-- and the lookups ON DELETE CASCADE does when a referenced row is deleted.
+-- (kunde_hat_adressen.adresse_id is already covered by its primary key.)
+CREATE INDEX idx_produkt_angelegt_von           ON produkt (angelegt_von);
+CREATE INDEX idx_bestellung_mitarbeiterzuweis   ON bestellung (mitarbeiterzuweis);
+CREATE INDEX idx_bestellung_kunde_id            ON bestellung (kunde_id);
+CREATE INDEX idx_kunde_hat_adressen_kunde_id    ON kunde_hat_adressen (kunde_id);
+CREATE INDEX idx_bestellposition_sku            ON bestellposition (sku);
+CREATE INDEX idx_bestellposition_bestellung_id  ON bestellposition (bestellung_id);
 
 
 -- =============================================================================

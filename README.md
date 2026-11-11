@@ -24,7 +24,7 @@ A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL*
 
 **🗄️ Database**
 
-- **7 normalized tables** linked by foreign keys
+- **7 normalized tables** linked by indexed foreign keys
 - **Built-in validation:** `CHECK` constraints for emails, names, addresses and password strength
 - **Automatic stock tracking:** PL/pgSQL triggers update stock whenever order items change
 - **No overselling:** orders beyond the available stock are rejected, even when two arrive at once
@@ -41,7 +41,7 @@ A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL*
 
 - **One command** starts PostgreSQL with the schema and seed data (Docker Compose)
 - **Swagger UI** to browse and try every endpoint
-- **19 integration tests** check the triggers, views and API against a real PostgreSQL on every push
+- **20 integration tests** check the triggers, views and API against a real PostgreSQL on every push
 
 ---
 
@@ -126,7 +126,7 @@ erDiagram
         bigint personal_nr PK
         varchar vorname
         varchar nachname
-        varchar email
+        varchar email UK
         varchar passwort
     }
     PRODUKT {
@@ -158,6 +158,7 @@ erDiagram
 | Column | Rule (enforced by PostgreSQL) |
 | --- | --- |
 | `kunde.email` | `UNIQUE`; must contain `@` followed later by a `.` |
+| `mitarbeiter.email` | `UNIQUE` |
 | `vorname`, `nachname` | Letters only (including umlauts), 1–32 characters |
 | `adresse.strasse` | Starts with a capital letter, then letters only |
 | `adresse.hausnummer` | Digits plus an optional lowercase letter (`12`, `7a`) |
@@ -167,7 +168,7 @@ erDiagram
 | `bestellposition.menge` | Greater than 0 |
 | `bestellung.status` | One of `neu`, `bezahlt`, `versendet`, `abgeschlossen`, `storniert` |
 
-All surrogate keys use `GENERATED ALWAYS AS IDENTITY`.
+All surrogate keys use `GENERATED ALWAYS AS IDENTITY`. Every foreign key column has an index, because PostgreSQL only creates them automatically for primary keys and `UNIQUE` columns.
 
 ---
 
