@@ -3,6 +3,7 @@ package com.dbw.spring_boot;
 import com.dbw.spring_boot.model.BestellungResponse;
 import com.dbw.spring_boot.model.KundeResponse;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -45,6 +46,15 @@ class RestApiTest extends IntegrationTest {
     }
 
     @Test
+    void emailWithADotBeforeTheAtSignIsAccepted() {
+        ResponseEntity<KundeResponse> res = api.postForEntity("/kunden",
+                Map.of("email", "lisa.lang@test.db", "vorname", "Lisa", "nachname", "Lang", "passwort", "lisa1!"),
+                KundeResponse.class);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
     void dataViolatingACheckConstraintReturnsBadRequest() {
         ResponseEntity<String> res = api.postForEntity("/kunden",
                 Map.of("email", "kaputt", "vorname", "Lisa", "nachname", "Lang", "passwort", "lisa1!"),
@@ -57,6 +67,14 @@ class RestApiTest extends IntegrationTest {
     void unknownResourceReturnsNotFound() {
         assertThat(api.getForEntity("/kunden?id=999", String.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(api.getForEntity("/produkte?sku=NOPE", String.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void employeeWithOrdersCanBeDeleted() {
+        // employee 1 handles order 1 and created SKU-1001, which is in orders 1 and 5
+        ResponseEntity<Void> res = api.exchange("/mitarbeiter?id=1", HttpMethod.DELETE, null, Void.class);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test

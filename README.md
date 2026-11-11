@@ -41,7 +41,7 @@ A REST API for a small online shop, built with **Spring Boot** and **PostgreSQL*
 
 - **One command** starts PostgreSQL with the schema and seed data (Docker Compose)
 - **Swagger UI** to browse and try every endpoint
-- **15 integration tests** check the triggers, views and API against a real PostgreSQL on every push
+- **19 integration tests** check the triggers, views and API against a real PostgreSQL on every push
 
 ---
 
@@ -188,7 +188,7 @@ stateDiagram-v2
     storniert --> [*]
 ```
 
-An order can only be cancelled while it is still `neu` (new) or `bezahlt` (paid). Once it has been shipped (`versendet`), the database rejects the cancellation.
+An order can only be cancelled while it is still `neu` (new) or `bezahlt` (paid). Once it has been shipped (`versendet`), the database rejects the cancellation. A cancelled order can't be reopened.
 
 ### Triggers
 
@@ -197,8 +197,9 @@ An order can only be cancelled while it is still `neu` (new) or `bezahlt` (paid)
 | `bestellposition_before_insert` | `BEFORE INSERT` on `bestellposition` | Locks the product row, rejects the item if there isn't enough stock, then reduces the stock |
 | `bestellposition_before_update` | `BEFORE UPDATE` on `bestellposition` | Returns the old quantity to stock and takes the new one, even if the product or order changed |
 | `bestellposition_before_delete` | `BEFORE DELETE` on `bestellposition` | Puts the item's quantity back into stock |
-| `bestellung_before_status_update` | `BEFORE UPDATE OF status` on `bestellung` | Allows cancellation only from `neu` or `bezahlt` |
+| `bestellung_before_status_update` | `BEFORE UPDATE OF status` on `bestellung` | Allows cancellation only from `neu` or `bezahlt`, and blocks reopening a cancelled order |
 | `bestellung_after_status_update` | `AFTER UPDATE OF status` on `bestellung` | When an order is cancelled, returns the stock for all its items in one `UPDATE … FROM (SELECT … GROUP BY)` |
+| `bestellung_before_delete` | `BEFORE DELETE` on `bestellung` | Deletes the order's items first, so their stock is returned while the order's status can still be read |
 
 The stock triggers skip orders that are already cancelled, so stock is never counted twice.
 

@@ -32,6 +32,18 @@ class OrderCancellationTest extends IntegrationTest {
         assertThat(stock("SKU-1002")).isEqualTo(7);
     }
 
+    @Test
+    void cancelledOrderCannotBeReopened() {
+        jdbc.update("UPDATE bestellung SET status = 'storniert' WHERE bestellung_id = 1");
+
+        assertThatThrownBy(() -> jdbc.update("UPDATE bestellung SET status = 'neu' WHERE bestellung_id = 1"))
+                .isInstanceOf(DataAccessException.class)
+                .rootCause().hasMessageContaining("Stornierte Bestellung 1 kann nicht wieder geöffnet werden");
+
+        assertThat(status(1)).isEqualTo("storniert");
+        assertThat(stock("SKU-1001")).isEqualTo(5);
+    }
+
     private String status(long bestellungId) {
         return jdbc.queryForObject("SELECT status FROM bestellung WHERE bestellung_id = ?", String.class, bestellungId);
     }

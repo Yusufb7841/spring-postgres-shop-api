@@ -3,6 +3,7 @@ package com.dbw.spring_boot;
 import com.dbw.spring_boot.model.BestellpositionResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,6 +35,19 @@ class StockTriggerTest extends IntegrationTest {
         api.delete("/bestellpositionen?id=" + created.positionsId());
 
         assertThat(stock("SKU-1003")).isEqualTo(24);
+    }
+
+    @Test
+    void deletingAnOrderPutsItsItemsBackIntoStock() {
+        // order 1 is 'neu' and contains 5 x SKU-1001 and 2 x SKU-1002
+        assertThat(stock("SKU-1001")).isEqualTo(0);
+        assertThat(stock("SKU-1002")).isEqualTo(5);
+
+        ResponseEntity<Void> res = api.exchange("/bestellungen?id=1", HttpMethod.DELETE, null, Void.class);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(stock("SKU-1001")).isEqualTo(5);
+        assertThat(stock("SKU-1002")).isEqualTo(7);
     }
 
     @Test
